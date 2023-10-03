@@ -1,5 +1,10 @@
 package utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import pojo.Claim;
+
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PostgreUtil {
+public class Utils {
 
     public static List<Map<String, Object>> executeQuery(String query) {
 
@@ -33,9 +38,36 @@ public class PostgreUtil {
             }
         } catch (SQLException ex) {
 
-            Logger lgr = Logger.getLogger(PostgreUtil.class.getName());
+            Logger lgr = Logger.getLogger(Utils.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return result;
+    }
+
+    public static Claim[] getClaimsFromFile(){
+        String fileData;
+        Claim[] claims;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try(BufferedReader br = new BufferedReader(new FileReader("src\\test\\resources\\listOfClaims.txt"))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line.trim());
+                line = br.readLine();
+            }
+
+            fileData = sb.toString();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            claims = objectMapper.readValue(fileData, Claim[].class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return claims;
     }
 }

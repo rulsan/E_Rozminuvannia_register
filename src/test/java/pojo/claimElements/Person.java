@@ -1,10 +1,12 @@
-package pojo.registerElements;
+package pojo.claimElements;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class Person {
 
     private String first_name;
