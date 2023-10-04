@@ -2,29 +2,29 @@ package utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
 import pojo.Claim;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Utils {
 
-    public static List<Map<String, Object>> executeQuery(String query) {
+    private final static org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+
+    public static List<Map<String,Object>> executeQuery(String query) {
 
         String url = "jdbc:postgresql://192.168.189.11:5432/postgres";
         String user = "postgres";
         String password = "postgres";
-        List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String,Object>> result = new ArrayList<>();
 
         try (Connection con = DriverManager.getConnection(url, user, password);
             PreparedStatement pst = con.prepareStatement(query);
@@ -36,10 +36,8 @@ public class Utils {
                 }
                 result.add(resMap);
             }
-        } catch (SQLException ex) {
-
-            Logger lgr = Logger.getLogger(Utils.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
         return result;
     }
@@ -59,13 +57,16 @@ public class Utils {
 
             fileData = sb.toString();
         } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         } catch (IOException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
         try {
             claims = objectMapper.readValue(fileData, Claim[].class);
         } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
             throw new RuntimeException(e);
         }
         return claims;

@@ -1,5 +1,4 @@
 target/
-.allure
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -39,3 +38,4 @@ build/
 .DS_Store
 /qodana.yaml
 /.allure/
+/logs/
